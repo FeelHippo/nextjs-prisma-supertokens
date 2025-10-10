@@ -1,34 +1,43 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
-import {textInputs, userRegistration} from '@/app/lib/interfaces/registration';
+import {
+  textInputs,
+  userRegistration,
+} from '@/app/lib/interfaces/registration';
 
-const useForm = (validate: (inputs: userRegistration) => Partial<userRegistration>) => {
-    const [inputs, setInputs] = useState<userRegistration>({
-        [textInputs.firstname]: '',
-        [textInputs.lastname]: '',
-        [textInputs.email]: '',
-        [textInputs.password]: '',
-        [textInputs.passwordConfirm]: '',
-        [textInputs.agreesToTerms]: false,
+const useForm = (
+  validate: (inputs: userRegistration) => Partial<userRegistration>,
+) => {
+  const [inputs, setInputs] = useState<userRegistration>({
+    [textInputs.firstname]: '',
+    [textInputs.lastname]: '',
+    [textInputs.email]: '',
+    [textInputs.password]: '',
+    [textInputs.passwordConfirm]: '',
+    [textInputs.agreesToTerms]: false,
+  });
+
+  const [errors, setErrors] = useState<Partial<userRegistration>>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputs({
+      ...inputs,
+      [e.target.name]: e.target.value,
     });
+  };
 
-    const [errors, setErrors] = useState<Partial<userRegistration>>({});
+  const handleSubmit = (
+    e:
+      | React.FormEvent<HTMLFormElement>
+      | React.FocusEvent<HTMLInputElement, Element>,
+  ) => {
+    e.preventDefault();
 
-    const handleChange = (e:  React.ChangeEvent<HTMLInputElement>) => {
-        setInputs({
-            ...inputs,
-            [e.target.name]: e.target.value
-        });
-    };
+    setErrors(validate(inputs));
+  };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement> | React.FocusEvent<HTMLInputElement, Element> ) => {
-        e.preventDefault();
-
-        setErrors(validate(inputs));
-    };
-
-    return { handleChange, inputs, handleSubmit, errors };
+  return { handleChange, inputs, handleSubmit, errors };
 };
 
 export default useForm;

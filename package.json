@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "npx prettier --write ."
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",
@@ -25,6 +25,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "3.6.2",
     "prisma": "^6.16.3",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",

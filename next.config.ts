@@ -1,18 +1,18 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-    // https://nextjs.org/docs/app/api-reference/config/next-config-js/crossOrigin
-    // https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/crossorigin#use-credentials
-    crossOrigin: "use-credentials",
-    async redirects() {
-        return [
-            {
-                source: '/',
-                destination: '/registration',
-                permanent: true,
-            },
-        ]
-    },
+  // https://nextjs.org/docs/app/api-reference/config/next-config-js/crossOrigin
+  // https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/crossorigin#use-credentials
+  crossOrigin: 'use-credentials',
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/registration',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
