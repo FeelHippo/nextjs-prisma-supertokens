@@ -1,10 +1,12 @@
-export default function GradientBackground() {
+import {JSX} from "react";
+
+export default function GradientBackground(props: { gradients: any[]; title: string; subtitle: string }): JSX.Element {
     return (
         <div
-            className="flex"
+            className="hidden md:flex"
         >
             {
-                gradients.map((gradient, i) =>
+                props.gradients.map((gradient, i) =>
                     <div
                         key={i.toString()}
                         className="inline min-w-1/28 w-1/28 min-h-full h-full bg-linear-to-r from-blue-600 to-blue-500 z-0"
@@ -13,72 +15,15 @@ export default function GradientBackground() {
                         {
                             !!gradient &&
                             < div
-                                className={`block min-w-1/28 w-1/28 bg-linear-to-b from-transparent ${gradient?.via} to-transparent z-10`}
-                                style={{ minHeight: gradient?.minHeight, minWidth: "100%", marginTop: gradient?.marginTop }}
+                                className={`block min-w-1/28 w-1/28 bg-linear-to-b from-transparent ${gradient?.via} to-transparent z-1`}
+                                style={{ height: "50vh", minWidth: "100%", marginTop: gradient?.marginTop }}
                             ></div>
                         }
                     </div>
                 )
             }
+            <div className="font-sans font-extrabold text-7xl" style={{ position: "absolute", top: "66vh", left: "5vw" }}>{props.title}</div>
+            <div className="font-sans text-5xl" style={{ position: "absolute", top: "77vh", left: "5vw" }}>{props.subtitle}</div>
         </div>
     );
 }
-
-const gradients = [
-    null, null, null,
-    {
-        minHeight: "75vh",
-        marginTop: "10vh",
-        via: "via-purple-500",
-    },
-    {
-        minHeight: "100vh",
-        marginTop: "0vh",
-        via: "via-fuchsia-400",
-    },
-    {
-        minHeight: "110vh",
-        marginTop: "0vh",
-        via: "via-pink-500",
-    },
-    {
-        minHeight: "100vh",
-        marginTop: "5vh",
-        via: "via-orange-500",
-    },
-    {
-        minHeight: "100vh",
-        marginTop: "5vh",
-        via: "via-yellow-500",
-    },
-    {
-        minHeight: "105vh",
-        marginTop: "10vh",
-        via: "via-yellow-400",
-    },
-    {
-        minHeight: "110vh",
-        marginTop: "33vh",
-        via: "via-pink-500",
-    },
-    {
-        minHeight: "100vh",
-        marginTop: "36vh",
-        via: "via-orange-500",
-    },
-    {
-        minHeight: "100vh",
-        marginTop: "39vh",
-        via: "via-yellow-500",
-    },
-    {
-        minHeight: "105vh",
-        marginTop: "42vh",
-        via: "via-yellow-400",
-    },
-    {
-        minHeight: "105vh",
-        marginTop: "45vh",
-        via: "via-yellow-300",
-    },
-];
