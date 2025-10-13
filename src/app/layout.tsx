@@ -4,6 +4,8 @@ import './globals.css';
 import React from 'react';
 import GradientBackground from '@/app/gradient_background';
 import { gradients } from '@/app/lib/constants/lists';
+import { frontendConfig } from './config/frontend';
+import { SuperTokensInit } from './components/supertokensInit';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -27,16 +29,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <GradientBackground
-          gradients={gradients}
-          title="Welcome to"
-          subtitle="Public Repository"
-        />
-        {children}
-      </body>
+      <SuperTokensInit>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <GradientBackground
+            gradients={gradients}
+            title="Welcome to"
+            subtitle="Public Repository"
+          />
+          {children}
+        </body>
+      </SuperTokensInit>
     </html>
   );
 }
