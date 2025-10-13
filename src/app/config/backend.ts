@@ -4,13 +4,14 @@ import SessionNode from 'supertokens-node/recipe/session';
 import { appInfo } from './appInfo';
 import { TypeInput } from 'supertokens-node/types';
 
+export const connectionURI = process.env.CORE_API_ENDPOINT ??
+    'https://<OBTAIN_THIS_FROM_ADMIN>.aws.supertokens.io';
+
 export const backendConfig = (): TypeInput => {
   return {
     framework: 'custom',
     supertokens: {
-      connectionURI:
-        process.env.CORE_API_ENDPOINT ??
-        'https://<OBTAIN_THIS_FROM_ADMIN>.aws.supertokens.io',
+      connectionURI,
       apiKey: process.env.SUPERTOKENS_API_KEY ?? 'OBTAIN_THIS_FROM_ADMIN',
     },
     appInfo,

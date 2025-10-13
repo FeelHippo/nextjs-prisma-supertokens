@@ -1,103 +1,104 @@
-import Image from 'next/image';
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { TryRefreshComponent } from '@/app/components/try_refresh_client_component';
+import { connectionURI } from '@/app/config/backend';
+import jwksClient from "jwks-rsa";
+import JsonWebToken from "jsonwebtoken";
+import type { JwtHeader, JwtPayload, SigningKeyCallback } from "jsonwebtoken";
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{' '}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+// Configure the client
+// Provide a JWKS endpoint which exposes your signing keys => SuperTokens provider
+// https://www.npmjs.com/package/jwks-rsa
+// https://auth0.com/docs
+const client = jwksClient({
+    jwksUri: `${connectionURI}/.well-known/jwks.json`,
+});
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+async function getAccessToken() {
+    const cookiesStore = await cookies();
+    return cookiesStore.get("sAccessToken")?.value;
+}
+
+function getPublicKey(header: JwtHeader, callback: SigningKeyCallback) {
+    // Retrieve a key
+    // Then use getSigningKey to retrieve a signing key that matches a specific kid
+    client.getSigningKey(header.kid, (err, key) => {
+        if (err) {
+            callback(err);
+        } else {
+            const signingKey = key?.getPublicKey();
+            callback(null, signingKey);
+        }
+    });
+}
+
+async function verifyToken(token: string): Promise<JwtPayload> {
+    return new Promise((resolve, reject) => {
+        JsonWebToken.verify(token, getPublicKey, {}, (err, decoded) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(decoded as JwtPayload);
+            }
+        });
+    });
+}
+
+/**
+ * A helper function to retrieve session details on the server side.
+ *
+ * NOTE: This function does not use the getSession / verifySession function from the supertokens-node SDK
+ * because those functions may update the access token. These updated tokens would not be
+ * propagated to the client side properly, as request interceptors do not run on the server side.
+ * So instead, we use regular JWT verification library
+ */
+async function getSSRSessionHelper(): Promise<{
+    accessTokenPayload: JwtPayload | undefined;
+    hasToken: boolean;
+    error: Error | undefined;
+}> {
+    const accessToken = await getAccessToken();
+    const hasToken = !!accessToken;
+    try {
+        if (accessToken) {
+            const decoded = await verifyToken(accessToken);
+            return { accessTokenPayload: decoded, hasToken, error: undefined };
+        }
+        return { accessTokenPayload: undefined, hasToken, error: undefined };
+    } catch (error) {
+        return { accessTokenPayload: undefined, hasToken, error: undefined };
+    }
+}
+
+export async function Page() {
+    const { accessTokenPayload, hasToken, error } = await getSSRSessionHelper();
+
+    if (error) {
+        return <div>Something went wrong while trying to get the session. Error - {error.message}</div>;
+    }
+
+    // `accessTokenPayload` will be undefined if the session does not exist or has expired
+    if (accessTokenPayload === undefined) {
+        if (!hasToken) {
+            /**
+             * This means that the user is not logged in. If you want to display some other UI in this
+             * case, you can do so here.
+             */
+            return redirect("/registration");
+        }
+
+        /**
+         * This means that the session does not exist, but we have session tokens for the user. In this case
+         * the `TryRefreshComponent` will try to refresh the session.
+         *
+         * To learn about why the 'key' attribute is required refer to: https://github.com/supertokens/supertokens-node/issues/826#issuecomment-2092144048
+         */
+        return <TryRefreshComponent key={Date.now()} />;
+    }
+
+    return (
+        <div>
+            Your user id is: {accessTokenPayload.sub}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    );
 }

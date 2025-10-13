@@ -1,13 +1,11 @@
 'use client';
 
-import React, { RefObject } from 'react';
+import React from 'react';
 import useForm from '@/app/lib/utils/form';
 import validate from '../lib/utils/validate_data';
 import {
   textInputs,
-  userRegistration,
 } from '@/app/lib/interfaces/registration';
-import { PageHeaderInterface } from '@/app/components/page_header';
 
 export interface AuthenticationFormInterface {
   text: string;
