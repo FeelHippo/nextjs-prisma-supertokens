@@ -5,7 +5,7 @@ import React from 'react';
 import GradientBackground from '@/app/gradient_background';
 import { gradients } from '@/app/lib/constants/lists';
 import { frontendConfig } from './config/frontend';
-import { SuperTokensInit } from './components/supertokensInit';
+import { Supertokens_init } from './components/supertokens_init';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <SuperTokensInit>
+      <Supertokens_init>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
@@ -40,7 +40,7 @@ export default function RootLayout({
           />
           {children}
         </body>
-      </SuperTokensInit>
+      </Supertokens_init>
     </html>
   );
 }

@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
 /*
 / This component will initialise SuperTokens
 */
-export const SuperTokensInit: React.FC<React.PropsWithChildren<{}>> = ({
+export const Supertokens_init: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
   return <>{children}</>;

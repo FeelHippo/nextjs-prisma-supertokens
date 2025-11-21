@@ -11,32 +11,37 @@ export interface AuthenticationFormInterface {
   text: string;
   width: number;
 }
-function AuthenticationForm({ text, width }: AuthenticationFormInterface) {
-  const { handleChange, inputs, handleSubmit, errors } = useForm(validate);
 
-  const uniqueTextInputs = [
+export const uniqueTextInputs = [
     { name: textInputs.firstname, type: 'text', placeholder: 'First Name' },
     { name: textInputs.lastname, type: 'text', placeholder: 'Last Name' },
     { name: textInputs.email, type: 'email', placeholder: 'Email' },
     {
-      name: textInputs.password,
-      type: 'password',
-      placeholder: 'Choose a password',
+        name: textInputs.password,
+        type: 'password',
+        placeholder: 'Choose a password',
     },
     {
-      name: textInputs.passwordConfirm,
-      type: 'password',
-      placeholder: 'Repeat password',
+        name: textInputs.passwordConfirm,
+        type: 'password',
+        placeholder: 'Repeat password',
     },
-  ];
+];
+
+function AuthenticationForm({ text, width }: AuthenticationFormInterface) {
+  const { handleChange, inputs, handleSubmit, errors } = useForm(validate);
 
   return (
     <div className="form">
-      <form onSubmit={handleSubmit}>
+      <form
+          aria-label="form"
+          onSubmit={handleSubmit}
+      >
         <div>
           {uniqueTextInputs.map((textInput, index) => (
             <input
               key={index}
+              data-testid={textInput.name}
               type={textInput.type}
               name={textInput.name.toString()}
               placeholder={textInput.placeholder}
