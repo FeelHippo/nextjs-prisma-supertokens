@@ -12,6 +12,7 @@ if (typeof window !== 'undefined') {
 /*
 / This component will initialise SuperTokens
 */
+// eslint-disable-next-line  @typescript-eslint/no-empty-object-type
 export const Supertokens_init: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {

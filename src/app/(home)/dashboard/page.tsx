@@ -55,7 +55,7 @@ async function verifyToken(token: string): Promise<JwtPayload> {
 async function getSSRSessionHelper(): Promise<{
   accessTokenPayload: JwtPayload | undefined;
   hasToken: boolean;
-  error: Error | undefined;
+  error: Error | undefined | unknown;
 }> {
   const accessToken = await getAccessToken();
   const hasToken = !!accessToken;
@@ -66,18 +66,18 @@ async function getSSRSessionHelper(): Promise<{
     }
     return { accessTokenPayload: undefined, hasToken, error: undefined };
   } catch (error) {
-    return { accessTokenPayload: undefined, hasToken, error: undefined };
+    return { accessTokenPayload: undefined, hasToken, error: error };
   }
 }
 
-export async function Page() {
+export default async function Page() {
   const { accessTokenPayload, hasToken, error } = await getSSRSessionHelper();
 
   if (error) {
     return (
       <div>
         Something went wrong while trying to get the session. Error -{' '}
-        {error.message}
+        {error instanceof Error && error.message}
       </div>
     );
   }

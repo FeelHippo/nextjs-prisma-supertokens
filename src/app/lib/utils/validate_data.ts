@@ -4,7 +4,7 @@ import {
 } from '@/app/lib/interfaces/registration';
 
 export default function validator(inputs: userRegistration) {
-  let errors: Partial<userRegistration> = {};
+  const errors: Partial<userRegistration> = {};
 
   // FIRST NAME
   if (!inputs[textInputs.firstname].trim()) {

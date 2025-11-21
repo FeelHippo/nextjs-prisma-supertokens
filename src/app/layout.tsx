@@ -4,7 +4,6 @@ import './globals.css';
 import React from 'react';
 import GradientBackground from '@/app/gradient_background';
 import { gradients } from '@/app/lib/constants/lists';
-import { frontendConfig } from './config/frontend';
 import { Supertokens_init } from './components/supertokens_init';
 
 const geistSans = Geist({

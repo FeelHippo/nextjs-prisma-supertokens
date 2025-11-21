@@ -15,7 +15,6 @@ const useForm = (
     [textInputs.email]: '',
     [textInputs.password]: '',
     [textInputs.passwordConfirm]: '',
-    [textInputs.agreesToTerms]: false,
   });
 
   const [errors, setErrors] = useState<Partial<userRegistration>>({});
